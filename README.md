@@ -11,6 +11,7 @@ Small Warlock summon counter for World of Warcraft: Forever (1.60.1, interface 1
 
 ## How it works
 
+- **Command requests:** Any player, regardless of class or whether they have the addon, can type `!sumcount` or `!sumleaderboard` in a supported chat channel. The addon listens for those requests on every class, but **only a character logged in as a Warlock sends the response**. Non-Warlocks also do not track summons; the options leaderboard remains viewable.
 - Successful player-targeted casts of **Ritual of Summoning** (spell ID 698) increase the target's account-wide count by one. Interrupted, failed, and unrelated casts are not counted.
 - `!sumcount` replies with the requesting player's total across characters (zero when none are recorded).
 - `!sumleaderboard` prints up to five numbered chat messages, highest count first, e.g. `1. Aria 14`, `2. Rex 8`. When there are no records, it says `No summons recorded yet.`

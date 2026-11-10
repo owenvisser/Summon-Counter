@@ -1,6 +1,7 @@
 local _, SC = ...
 local pendingTargets = {}
 local lastResponseTime
+local isWarlock = false
 local eventFrame = CreateFrame("Frame")
 
 -- Converts a potentially realm-qualified name to the existing lowercase saved-variable key.
@@ -80,6 +81,7 @@ end
 -- event: Blizzard event; ...: the event's original payload.
 eventFrame:SetScript("OnEvent", function(_, event, ...)
   if event == "PLAYER_LOGIN" then
+    isWarlock = select(2, UnitClass("player")) == "WARLOCK"
     if type(SumCountDB) ~= "table" then
       SumCountDB = {}
     end
@@ -112,7 +114,9 @@ eventFrame:SetScript("OnEvent", function(_, event, ...)
     return
   end
 
+  -- Only Warlocks track casts; all characters may receive chat commands.
   if event == "UNIT_SPELLCAST_SENT" then
+    if not isWarlock then return end
     local unit, targetName, castGUID, spellID = ...
     if unit == "player" and spellID == SC.summonSpellID and castGUID then
       if not targetName or targetName == "" then
@@ -131,6 +135,7 @@ eventFrame:SetScript("OnEvent", function(_, event, ...)
   end
 
   if event == "UNIT_SPELLCAST_SUCCEEDED" then
+    if not isWarlock then return end
     local unit, castGUID, spellID = ...
     if unit == "player" and spellID == SC.summonSpellID then
       local targetKey = pendingTargets[castGUID]
@@ -146,6 +151,7 @@ eventFrame:SetScript("OnEvent", function(_, event, ...)
   end
 
   if event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" then
+    if not isWarlock then return end
     local unit, castGUID = ...
     if unit == "player" then
       pendingTargets[castGUID] = nil
@@ -159,6 +165,10 @@ eventFrame:SetScript("OnEvent", function(_, event, ...)
   end
   local command = message:match("^%s*(.-)%s*$"):lower()
   if command ~= SC.requestTrigger and command ~= SC.leaderboardTrigger then
+    return
+  end
+  -- Anyone may request a count; only a Warlock can send the reply.
+  if not isWarlock then
     return
   end
   local senderKey = getPlayerKey(senderName)
