@@ -1,0 +1,10 @@
+## Interface: 16001
+## Title: Sum Count
+## Notes: Account-wide Ritual of Summoning counts and channel-aware chat replies.
+## Version: 1.3.0
+## SavedVariables: SumCountAccountDB
+## SavedVariablesPerCharacter: SumCountDB, SumCountNamesDB, SumCountLegacyMigrated
+
+SumCount_Parameters.lua
+SumCount.lua
+SumCount_Options.lua
